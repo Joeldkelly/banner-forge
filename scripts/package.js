@@ -68,6 +68,18 @@ async function main() {
   console.log(`[package] done. ${entries.length} zips → dist/`);
 }
 
+// Junk files macOS Finder / Windows Explorer inject that break DSP uploaders
+// (CM360 and DV360 both reject zips containing __MACOSX/ directories).
+const JUNK_BASENAMES = new Set([".DS_Store", "Thumbs.db", "desktop.ini", "ehthumbs.db"]);
+const JUNK_DIR_PREFIXES = ["__MACOSX/", "__MACOSX\\"];
+
+function isJunk(relPath) {
+  const base = path.basename(relPath);
+  if (JUNK_BASENAMES.has(base)) return true;
+  if (JUNK_DIR_PREFIXES.some(p => relPath.startsWith(p) || relPath.includes("/" + p))) return true;
+  return false;
+}
+
 function writeZip({ srcDir, zipPath, network, meta, config }) {
   return new Promise((resolve, reject) => {
     const output = fs.createWriteStream(zipPath);
@@ -79,18 +91,33 @@ function writeZip({ srcDir, zipPath, network, meta, config }) {
 
     archive.pipe(output);
 
-    // index.html always at zip root.
+    // index.html at zip root depth 0 — required by every DSP.
+    // Silently: no leading slash, no parent folders, exactly "index.html".
     archive.file(path.join(srcDir, "index.html"), { name: "index.html" });
 
-    // Assets.
+    // Assets subdirectory — filter out OS-injected junk (__MACOSX, .DS_Store, Thumbs.db)
+    // and zero-byte files that inflate request counts against IAB LEAN.
     const assetsDir = path.join(srcDir, "assets");
     if (fs.existsSync(assetsDir)) {
-      archive.directory(assetsDir, "assets");
+      walkAssets(assetsDir).forEach(({ abs, rel }) => {
+        if (isJunk(rel)) return;
+        const stat = fs.statSync(abs);
+        if (stat.size === 0) {
+          console.warn(`[package] skip 0-byte asset: ${rel}`);
+          return;
+        }
+        archive.file(abs, { name: `assets/${rel}` });
+      });
     }
 
-    // backup.png always at root (required by most networks for backup-image requirement).
+    // backup.png at zip root (CM360/DV360/Sizmek backup-image requirement).
     const backup = path.join(srcDir, "backup.png");
-    if (fs.existsSync(backup)) archive.file(backup, { name: "backup.png" });
+    const backupJpg = path.join(srcDir, "backup.jpg");
+    if (fs.existsSync(backupJpg)) {
+      archive.file(backupJpg, { name: "backup.jpg" });
+    } else if (fs.existsSync(backup)) {
+      archive.file(backup, { name: "backup.png" });
+    }
 
     // Adform: manifest.json at zip root.
     if (network.manifest === "adform") {
@@ -107,6 +134,21 @@ function writeZip({ srcDir, zipPath, network, meta, config }) {
 
     archive.finalize();
   });
+}
+
+function walkAssets(dir, prefix = "") {
+  const out = [];
+  for (const name of fs.readdirSync(dir)) {
+    const abs = path.join(dir, name);
+    const rel = prefix ? `${prefix}/${name}` : name;
+    const stat = fs.statSync(abs);
+    if (stat.isDirectory()) {
+      out.push(...walkAssets(abs, rel));
+    } else {
+      out.push({ abs, rel });
+    }
+  }
+  return out;
 }
 
 function parseArgs(argv) {

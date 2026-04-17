@@ -108,8 +108,24 @@ async function buildSize(sizeKey, config, gsapBundle) {
     logoMaxWidth: layout.logoMaxWidth
   };
 
-  // CSS: render + minify.
-  const css = renderRaw(cssTpl, tokens);
+  // CSS: render + append prefers-reduced-motion guard + minify.
+  // WCAG 2.3.3 requires respect for reduced-motion preferences. In practice,
+  // we disable all CSS animations / transitions and let the GSAP timeline's
+  // onComplete final-state handler determine the visible state (headline,
+  // subhead, CTA all visible at rest). For CSS-only templates this removes
+  // the staggered delays so everything appears immediately.
+  const reducedMotionBlock = `
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+  }
+  #logo, #headline, #subhead, #cta { opacity: 1 !important; transform: none !important; }
+}`;
+  const css = renderRaw(cssTpl, tokens) + reducedMotionBlock;
   const cssMin = cssoMinify(css, { restructure: true }).css;
 
   // Animation script: read + wrap with scene/loop config, then minify.
@@ -118,6 +134,19 @@ async function buildSize(sizeKey, config, gsapBundle) {
     const animTpl = read(path.join(TEMPLATES, "gsap", "animation.js"));
     const scenes = filterScenes(config.animation?.scenes || [], tokens);
     const loops = Math.max(1, Math.min(3, config.animation?.loops || 3));
+
+    // Reject user-supplied animation overrides that contain `repeat: -1`
+    // (infinite loops violate the ≤3-loop cap enforced by Google/DV360/TTD).
+    // We check both the config-level animation.userScript (V1 hook) and the
+    // scenes array for accidental inclusion.
+    const configAsJson = JSON.stringify(config.animation || {});
+    if (/repeat\s*:\s*-1/.test(configAsJson)) {
+      throw new Error(
+        `Animation config uses repeat: -1 (infinite loop). Google/DV360/TTD enforce ≤3 loops. ` +
+        `Remove the -1 and use loops: 1|2|3 instead.`
+      );
+    }
+
     const animWithConfig =
       `window.__BANNER__ = ${JSON.stringify({ scenes, loops })};\n` + animTpl;
     const minified = await terserMinify(animWithConfig, {

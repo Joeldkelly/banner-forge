@@ -11,6 +11,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import zlib from "node:zlib";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
@@ -97,21 +98,52 @@ async function validateZip(zipPath) {
 
   const fileNames = entries.map(e => e.name);
 
-  // Size ceiling.
+  // Size ceiling — raw bytes. Most publishers enforce raw, but Google Studio
+  // measures gzipped; we report both so the user can answer either question.
   let networkSpec;
   try { networkSpec = getNetwork(network); } catch { networkSpec = null; }
   if (networkSpec) {
     if (bytes > networkSpec.totalLoadCeilingBytes) {
       failures.push(`over total-load ceiling (${bytes} > ${networkSpec.totalLoadCeilingBytes})`);
     } else if (bytes > networkSpec.initialLoadCeilingBytes) {
-      warnings.push(`over polite-load ceiling (${bytes} > ${networkSpec.initialLoadCeilingBytes})`);
+      warnings.push(`over polite-load ceiling raw (${bytes} > ${networkSpec.initialLoadCeilingBytes})`);
     }
   } else if (bytes > 150000) {
-    warnings.push(`over 150KB polite-load threshold`);
+    warnings.push(`over 150KB polite-load threshold (raw)`);
   }
 
-  // index.html present at root.
+  // Gzip-aware weight of index.html — Google Studio measures gzipped weight.
+  let gzippedIndexHtml = 0;
+  if (indexHtml) {
+    gzippedIndexHtml = zlib.gzipSync(Buffer.from(indexHtml, "utf8")).length;
+  }
+
+  // index.html at zip root depth 0. Any entry named with a leading path would violate.
   if (!fileNames.includes("index.html")) failures.push("index.html missing at zip root");
+  const rootIndex = entries.find(e => e.name === "index.html");
+  if (rootIndex && rootIndex.name.includes("/")) failures.push("index.html is not at zip root (depth 0)");
+
+  // __MACOSX / junk files — macOS Finder's "Compress" injects these and breaks some DSPs.
+  const junkEntries = entries.filter(e =>
+    e.name.startsWith("__MACOSX/") ||
+    e.name.endsWith("/.DS_Store") || e.name === ".DS_Store" ||
+    e.name.endsWith("/Thumbs.db")  || e.name === "Thumbs.db"
+  );
+  if (junkEntries.length) {
+    failures.push(`zip contains junk entries (${junkEntries.length}): ${junkEntries.map(e => e.name).slice(0,3).join(", ")}`);
+  }
+
+  // 0-byte files inflate request counts against IAB LEAN's ≤15 file limit.
+  const zeroByte = entries.filter(e => e.uncompressedSize === 0 && !e.name.endsWith("/"));
+  if (zeroByte.length) {
+    warnings.push(`zip contains ${zeroByte.length} zero-byte file(s): ${zeroByte.map(e => e.name).slice(0,3).join(", ")}`);
+  }
+
+  // IAB LEAN ≤15 initial-load requests. Count real files (skip directory entries).
+  const realFiles = entries.filter(e => !e.name.endsWith("/"));
+  if (realFiles.length > 15) {
+    warnings.push(`${realFiles.length} files exceeds IAB LEAN budget of 15 initial-load requests`);
+  }
 
   // Adform manifest.
   if (network === "adform" && !fileNames.includes("manifest.json")) {
@@ -127,18 +159,32 @@ async function validateZip(zipPath) {
       if (!hasClickTAG) failures.push("clickTAG (uppercase) missing — required by TTD/Adform");
     }
 
-    // External font requests forbidden.
+    // ad.size meta tag — CM360 / Google Ad Manager silently disapprove without it.
+    if (!/<meta\s+name=["']ad\.size["']/i.test(indexHtml)) {
+      failures.push('<meta name="ad.size"> missing — CM360 disapproves HTML5 creatives without it');
+    }
+
+    // External font requests forbidden (GDPR — LG München 2022).
     if (/https?:\/\/fonts\.googleapis\.com/.test(indexHtml)) {
       failures.push("loads fonts.googleapis.com at runtime — GDPR risk");
     }
 
-    // External CDN (any non-self, non-clickTag URL in <script src> or <link href>).
-    const externalScripts = indexHtml.match(/<(?:script|link)[^>]+(?:src|href)="(https?:\/\/[^"]+)"/g) || [];
+    // http:// mixed-content references — most browsers and DSPs reject.
+    // Ignore clickTag values (which may be http in dev) and ignore the DOCTYPE URL.
+    const httpRefs = [
+      ...indexHtml.matchAll(/<(?:script|link|img|iframe|source)[^>]+(?:src|href)=["'](http:\/\/[^"']+)["']/gi)
+    ].map(m => m[1]);
+    if (httpRefs.length) {
+      failures.push(`mixed-content http:// refs (${httpRefs.length}): ${httpRefs.slice(0,2).join(", ")}`);
+    }
+
+    // External CDN refs beyond the clickTag bridge (warning, not failure).
+    const externalScripts = indexHtml.match(/<(?:script|link)[^>]+(?:src|href)="(https:\/\/[^"]+)"/g) || [];
     const externalUrls = externalScripts
-      .map(s => s.match(/"(https?:\/\/[^"]+)"/)?.[1])
+      .map(s => s.match(/"(https:\/\/[^"]+)"/)?.[1])
       .filter(Boolean);
     if (externalUrls.length) {
-      warnings.push(`external refs: ${externalUrls.join(", ")}`);
+      warnings.push(`external refs: ${externalUrls.slice(0,3).join(", ")}`);
     }
 
     // Click URL is https.
@@ -147,10 +193,15 @@ async function validateZip(zipPath) {
       if (!clickTagMatch[1]) failures.push("clickTag is empty string");
       else if (!/^https?:\/\//.test(clickTagMatch[1])) failures.push("clickTag is not a valid URL");
     }
+
+    // GSAP repeat: -1 — infinite loops violate 3-loop cap on Google/DV360/TTD.
+    if (/repeat\s*:\s*-1/.test(indexHtml)) {
+      failures.push("animation uses repeat:-1 (infinite loop) — Google/DV360/TTD enforce ≤3 loops");
+    }
   }
 
   const status = failures.length ? "fail" : (warnings.length ? "pass-with-warnings" : "pass");
-  return { network, size, zipPath: rel, bytes, status, failures, warnings };
+  return { network, size, zipPath: rel, bytes, gzippedIndexHtml, realFileCount: realFiles.length, status, failures, warnings };
 }
 
 /**

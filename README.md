@@ -38,7 +38,7 @@ banner.config.json
   build.js   →  ./build/<size>/index.html + assets
         │
         ▼
- render.js   →  ./build/<size>/backup.png, preview.gif, preview.mp4
+ render.js   →  ./build/<size>/backup.jpg (mozjpeg, ≤40KB), preview.gif, preview.mp4
         │
         ▼
 package.js   →  ./dist/<network>/<size>.zip (with manifest + clickTag)
@@ -60,11 +60,28 @@ Each stage reads JSON sidecars from the previous. Stages are independently re-ru
 
 ## What you get
 
-- 15 canonical IAB sizes with GSAP animation and dual `clickTag` / `clickTAG` globals
-- Per-network zips: Google Ads, DV360, The Trade Desk, Adform (Amazon DSP in V1)
-- Static PNG backup images under 40KB (sharp-optimized)
+Output:
+
+- 15 canonical IAB sizes with GSAP animation (free for ads since April 2025 — see [references/LEGAL.md](./references/LEGAL.md))
+- Per-network zips: Google Ads, DV360, The Trade Desk, Adform (Amazon DSP, CM360 Studio, Sizmek, Xandr: V1)
+- Dimension-locked mozjpeg backup images targeting the CM360 40 KB ceiling
 - Animated GIF + MP4 previews of each build
-- Validation report covering file size, clickTag presence, asset count, and manifest correctness
+
+The stuff that breaks in ad ops, already handled:
+
+- **Dual `clickTag` + `clickTAG` globals** — one zip passes Google, DV360, TTD, Adform (see [references/CLICKTAG.md](./references/CLICKTAG.md))
+- **`<meta name="ad.size">` injected automatically** — CM360 silently disapproves HTML5 creatives without it
+- **`__MACOSX/`, `.DS_Store`, `Thumbs.db` stripped at zip time** — macOS Finder's "Compress" injects these and breaks DV360 uploaders
+- **Zero-byte files filtered** — inflate IAB LEAN ≤15 request budget without adding value
+- **`index.html` at zip root depth 0** — enforced; any deeper nesting fails validation
+- **`fonts.googleapis.com` rejected** — GDPR (LG München 2022)
+- **`http://` mixed-content refs rejected** — most DSPs reject; Safari blocks
+- **GSAP `repeat: -1` rejected at build time** — Google/DV360/TTD enforce ≤3 loops
+- **`prefers-reduced-motion` auto-variant** — WCAG 2.3.3 respected via CSS media query + GSAP short-circuit
+- **Adform `manifest.json` at zip root** — generated with the exact clicktags block Adform's adapter expects
+- **Gzip-aware weight reported alongside raw bytes** — Google Studio measures gzipped; most publishers enforce raw
+
+Validator output is `dist/validation-report.json`: pass / pass-with-warnings / fail per zip with the reason.
 
 ## Customize
 

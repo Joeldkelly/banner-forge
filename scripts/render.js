@@ -104,11 +104,17 @@ async function renderSize(browser, sizeKey, skip) {
     }
   }
 
-  // Backup = last frame, sharp-optimized.
+  // Backup = last frame, dimension-locked, compressed to the CM360 40KB target.
+  // CM360 requires backup image dimensions to match the ad exactly; Google Ad
+  // Manager crops mismatched backups. We use the final frame (holds the CTA,
+  // which is where the value lives) and ship mozjpeg with a binary-search
+  // retry loop to land under 40KB.
   const lastFramePath = path.join(framesDir, `f${String(totalFrames - 1).padStart(4, "0")}.png`);
-  const backupPath = path.join(dir, "backup.png");
-  await sharp(lastFramePath).png({ quality: 80, compressionLevel: 9, palette: true }).toFile(backupPath);
-  const backupBytes = fs.statSync(backupPath).size;
+  const backupJpgPath = path.join(dir, "backup.jpg");
+  const backupPngPath = path.join(dir, "backup.png");
+  const TARGET_BYTES = 40000;
+
+  const backupBytes = await compressBackup(lastFramePath, backupJpgPath, backupPngPath, meta.width, meta.height, TARGET_BYTES);
 
   // MP4 via ffmpeg.
   let mp4Bytes = 0;
@@ -154,6 +160,58 @@ function listBuildSizes() {
     const p = path.join(BUILD, f);
     return fs.statSync(p).isDirectory() && fs.existsSync(path.join(p, "meta.json"));
   });
+}
+
+/**
+ * Compress the final animation frame to a backup image that hits the CM360
+ * 40KB target and matches the declared ad dimensions exactly.
+ *
+ * Strategy:
+ *   1. Resize to exact (width, height) to prevent CM360 auto-crop mismatches.
+ *   2. Try mozjpeg at descending quality (85 → 35) until we're under target.
+ *   3. If still over (photographic hero, large dimensions), ship best-effort
+ *      JPG and log a warning. If under on the first try, we're done.
+ *   4. If the JPG is still over target even at q:35, fall back to palette PNG
+ *      (works well for flat/vector-heavy designs).
+ *
+ * Returns the final byte count on disk (of whichever format was written).
+ */
+async function compressBackup(srcPath, jpgPath, pngPath, width, height, targetBytes) {
+  // Ensure exact declared dimensions — CM360 and Google Ad Manager enforce this.
+  const resized = sharp(srcPath).resize(width, height, { fit: "cover", position: "centre" });
+
+  // Try mozjpeg at quality steps.
+  for (const quality of [85, 75, 65, 55, 45, 35]) {
+    const buf = await resized.clone().jpeg({ quality, mozjpeg: true, chromaSubsampling: "4:2:0" }).toBuffer();
+    if (buf.length <= targetBytes) {
+      fs.writeFileSync(jpgPath, buf);
+      if (fs.existsSync(pngPath)) fs.unlinkSync(pngPath);
+      return buf.length;
+    }
+  }
+
+  // Below all JPG thresholds — try palette PNG (good for flat/vector designs).
+  const pngBuf = await resized.clone().png({ quality: 80, compressionLevel: 9, palette: true }).toBuffer();
+  if (pngBuf.length <= targetBytes) {
+    fs.writeFileSync(pngPath, pngBuf);
+    if (fs.existsSync(jpgPath)) fs.unlinkSync(jpgPath);
+    return pngBuf.length;
+  }
+
+  // Still over target — ship the smaller of the two with a warning.
+  // This is genuine best-effort; most hero-photographic 970x250 banners
+  // won't fit 40KB at dimension-locked quality.
+  const jpgFallback = await resized.clone().jpeg({ quality: 30, mozjpeg: true, chromaSubsampling: "4:2:0" }).toBuffer();
+  if (jpgFallback.length <= pngBuf.length) {
+    fs.writeFileSync(jpgPath, jpgFallback);
+    if (fs.existsSync(pngPath)) fs.unlinkSync(pngPath);
+    console.warn(`[render] backup over ${targetBytes}B target: ${jpgFallback.length}B (mozjpeg q30)`);
+    return jpgFallback.length;
+  }
+  fs.writeFileSync(pngPath, pngBuf);
+  if (fs.existsSync(jpgPath)) fs.unlinkSync(jpgPath);
+  console.warn(`[render] backup over ${targetBytes}B target: ${pngBuf.length}B (palette PNG)`);
+  return pngBuf.length;
 }
 
 function resolveGifski() {

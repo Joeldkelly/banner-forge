@@ -8,6 +8,64 @@ Append-only. New decisions go at the top. Each entry: date, decision, alternativ
 
 ---
 
+## 2026-04-17 — Reframe MVP around industry-insider credibility "tells"
+
+**Decision:** Re-prioritize MVP features around the Tier 1 stack from the feature brief: per-DSP clickTag casing, gzip-aware LEAN linting, `__MACOSX` stripping, `ad.size` guard, dimension-locked mozjpeg backup, AST-rejected `repeat:-1`, `prefers-reduced-motion` variant, and target-byte backup compression. See [[Tier 1 Feature Brief]].
+
+**Alternatives:** Stay with original "breadth of output" framing (40+ sizes as the whole story).
+
+**Rationale:**
+- Breadth is table-stakes; spec-compliance is the credibility wedge.
+- The Pencil/Bannerflow/Celtra competition already claims breadth.
+- Industry insiders scan the README for specific names: clickTag casing per DSP, `__MACOSX`, Bill 96 surface area, OMID friendly obstructions, TCF v2.3. Those features make a trafficker say "they actually know" in under 10 seconds.
+- The "resizing day" user-benefit narrative coexists with the insider-credibility feature stack.
+
+---
+
+## 2026-04-17 — Remove AI copy variation matrix from V1
+
+**Decision:** Drop "Claude-driven copy variation matrix (N headlines × M CTAs)" from the V1 roadmap.
+
+**Alternatives:** Keep it as a differentiator.
+
+**Rationale:**
+- Pencil and AdCreative.ai already saturate this space.
+- Brand managers read AI-generated copy as slop.
+- Legal won't approve AI copy without human review — at which point the designer wrote it anyway.
+- Signals inexperience, not capability.
+- Time freed up goes to Tier 2 consulting-gold features (Audit Mode #19, Preview Wall #18).
+
+Replacement: feed-driven DCO Batch Mode (#15 in brief) — deterministic, spreadsheet-sourced, no AI.
+
+---
+
+## 2026-04-17 — Remove performance heuristics overlay from V2
+
+**Decision:** Drop "performance heuristics overlay (CTA placement, contrast ratios, text density, brand adherence)" from V2.
+
+**Alternatives:** Ship with a disclaimer.
+
+**Rationale:**
+- Tools like Neurons and Vizit sell "attention prediction" defensibly because they have proprietary calibrated datasets.
+- An OSS skill running a generic saliency model and calling it "attention prediction" gets called out as BS in a portfolio review.
+- Credibility cost > feature value.
+
+Replacement: A11y Triple-Check (#17) — real W3C-spec compliance (WCAG 2.3.1 flash threshold, contrast, color-blind simulation) with citable methodology.
+
+---
+
+## 2026-04-17 — ARIA labels for banner ads: do not build
+
+**Decision:** Do not add ARIA/screen-reader support to banner-forge.
+
+**Rationale:**
+- Display ads serve inside sandboxed iframes that screen readers skip.
+- AdChoices icons are the accepted industry accessibility affordance.
+- WCAG 2.3.1 photosensitive-flash protection and contrast are where real a11y wins live.
+- Time on ARIA is shadow-boxing.
+
+---
+
 ## 2026-04-16 — Apache 2.0 license
 
 **Decision:** Apache 2.0 for banner-forge itself.

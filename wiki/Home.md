@@ -20,6 +20,7 @@ The living documentation for banner-forge — a Claude Code skill that turns one
 - [[Project Overview]] — what this is, in plain language
 - [[Glossary]] — every piece of jargon defined
 - [[Roadmap]] — MVP → V1 → V2 plan
+- [[Tier 1 Feature Brief]] — the industry-insider credibility scorecard
 - [[Decisions Log]] — why we picked what we picked
 
 ### Architecture
@@ -80,9 +81,9 @@ The living documentation for banner-forge — a Claude Code skill that turns one
 
 ## Status
 
-- **Version:** v0.1.0 scaffold (pre-launch)
-- **Last reviewed:** 2026-04-16
-- **Repo:** `github.com/joeldkelly/banner-forge` *(not yet public)*
+- **Version:** v0.1.1 — Tier 1 credibility push (pre-launch)
+- **Last reviewed:** 2026-04-17
+- **Repo:** [github.com/joeldkelly/banner-forge](https://github.com/joeldkelly/banner-forge) (public)
 
 ## Conventions
 

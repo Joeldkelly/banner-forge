@@ -1,12 +1,26 @@
 /* banner-forge — GSAP animation timeline.
  * Uses global gsap loaded from the inlined bundle. Configured from window.__BANNER__
  * which build.js writes before this script executes.
+ *
+ * Respects prefers-reduced-motion (WCAG 2.3.3) by short-circuiting the timeline
+ * and jumping every animated element to its end state.
  */
 (function () {
   "use strict";
   var cfg = window.__BANNER__ || {};
   var loops = Math.max(1, Math.min(3, cfg.loops || 3));
   var scenes = cfg.scenes || [];
+
+  // prefers-reduced-motion — skip animation, show final composition.
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (window.gsap) {
+      gsap.set(["#logo", "#headline", "#subhead", "#cta", "#legal"], { opacity: 1, y: 0, scale: 1 });
+      if (document.getElementById("hero")) gsap.set("#hero", { scale: 1 });
+    }
+    window.__BANNER_READY__ = true;
+    window.__BANNER_FINAL__ = function () {};
+    return;
+  }
 
   var tl = gsap.timeline({
     repeat: loops - 1,
