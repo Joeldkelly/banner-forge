@@ -28,7 +28,7 @@ The author and maintainer of banner-forge.
 
 ## Recent projects
 
-- [Lettercarry](https://github.com/bettaspld/lettercarry) — admin-protected newsletter + campaign sending.
+- [Lettercarry](https://github.com/joeldkelly/lettercarry) — admin-protected newsletter + campaign sending.
 - [[Project Overview|banner-forge]] — this project.
 - Ruck Authority (content site, affiliate-driven).
 - Phishline (phishing simulation campaign generator).
@@ -37,7 +37,7 @@ The author and maintainer of banner-forge.
 ## Social and contact
 
 - **Web:** joel.design
-- **GitHub:** [@bettaspld](https://github.com/bettaspld)
+- **GitHub:** [@joeldkelly](https://github.com/joeldkelly)
 - **LinkedIn:** *(add link)*
 - **X:** *(add handle)*
 - **Email:** hello@joel.design (work), joeldkelly@gmail.com (personal)

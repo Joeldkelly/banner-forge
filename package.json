@@ -7,10 +7,10 @@
   "homepage": "https://joel.design/banner-forge",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bettaspld/banner-forge"
+    "url": "https://github.com/joeldkelly/banner-forge"
   },
   "bugs": {
-    "url": "https://github.com/bettaspld/banner-forge/issues"
+    "url": "https://github.com/joeldkelly/banner-forge/issues"
   },
   "keywords": [
     "claude-skill",

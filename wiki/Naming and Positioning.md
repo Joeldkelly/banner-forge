@@ -62,7 +62,7 @@ Anchor every piece of copy to *the lost day*. Pencil comes up only as a named co
 
 ## The hook (primary launch tweet)
 
-> *"I'm a senior designer. I built a Claude skill that generates 40 IAB banner sizes from one Figma frame in 45 seconds. Free. Open source. This is what I used to charge clients a full day for. github.com/bettaspld/banner-forge"*
+> *"I'm a senior designer. I built a Claude skill that generates 40 IAB banner sizes from one Figma frame in 45 seconds. Free. Open source. This is what I used to charge clients a full day for. github.com/joeldkelly/banner-forge"*
 
 Works because it names the profession, gives a specific number, compresses time, reveals the moat, and anchors on free — in one tweet.
 

@@ -82,7 +82,7 @@ The living documentation for banner-forge — a Claude Code skill that turns one
 
 - **Version:** v0.1.0 scaffold (pre-launch)
 - **Last reviewed:** 2026-04-16
-- **Repo:** `github.com/bettaspld/banner-forge` *(not yet public)*
+- **Repo:** `github.com/joeldkelly/banner-forge` *(not yet public)*
 
 ## Conventions
 

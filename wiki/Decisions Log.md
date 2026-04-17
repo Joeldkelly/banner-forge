@@ -190,7 +190,7 @@ See [[Fonts Licensing]].
 
 ## 2026-04-16 — Personal brand, not separate brand
 
-**Decision:** bundle under joel.design. Repo at `github.com/bettaspld/banner-forge`.
+**Decision:** bundle under joel.design. Repo at `github.com/joeldkelly/banner-forge`.
 
 **Alternatives:** stand up a dedicated product brand.
 

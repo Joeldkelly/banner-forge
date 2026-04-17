@@ -30,7 +30,7 @@ Every loaded skill pays for its frontmatter + name + description in the context 
 
 ### Install friction
 
-`claude plugin install bettaspld/banner-forge` is a clean one-liner. `install banner-build + banner-render + banner-package + banner-validate` requires four commands, dependency-coordination across versions, and a README section no one reads. First-install friction is the single biggest drop-off in open-source adoption.
+`claude plugin install joeldkelly/banner-forge` is a clean one-liner. `install banner-build + banner-render + banner-package + banner-validate` requires four commands, dependency-coordination across versions, and a README section no one reads. First-install friction is the single biggest drop-off in open-source adoption.
 
 ### Fractured GitHub star economy
 

@@ -12,12 +12,12 @@ A Claude Code skill that turns one brand config (or Figma frame) into a complete
 
 ```bash
 # clone and install
-git clone https://github.com/bettaspld/banner-forge
+git clone https://github.com/joeldkelly/banner-forge
 cd banner-forge
 npm install
 
 # or as a Claude Code plugin (once published)
-claude plugin install bettaspld/banner-forge
+claude plugin install joeldkelly/banner-forge
 ```
 
 ## Quick start (no Figma required)
