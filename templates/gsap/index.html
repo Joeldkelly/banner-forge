@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width={{width}}">
+<meta name="ad.size" content="width={{width}},height={{height}}">
+<title>{{campaignName}} {{width}}x{{height}}</title>
+
+<script type="text/javascript">
+  // Dual clickTag: Google/DV360 use lowercase, TTD/Adform legacy uppercase.
+  // Keep both. Do not rename. Do not minify these globals.
+  var clickTag = "{{clickUrl}}";
+  var clickTAG = clickTag;
+</script>
+
+<style>{{inlineCss}}</style>
+</head>
+<body>
+  <div id="banner" role="img" aria-label="{{ariaLabel}}" onclick="window.open(window.clickTag,'_blank')">
+    {{#if hero}}<img id="hero" src="{{hero.src}}" alt="{{hero.alt}}">{{/if}}
+    <div id="content">
+      {{#if logo}}<img id="logo" src="{{logo.src}}" alt="{{logo.alt}}">{{/if}}
+      <h1 id="headline">{{headline}}</h1>
+      <p id="subhead">{{subhead}}</p>
+      <span id="cta" class="cta">{{cta}}</span>
+      {{#if legal}}<small id="legal">{{legal}}</small>{{/if}}
+    </div>
+  </div>
+
+  <script>{{inlineGsap}}</script>
+  <script>{{inlineAnimation}}</script>
+</body>
+</html>

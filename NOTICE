@@ -1,0 +1,57 @@
+banner-forge
+Copyright 2026 Joel Kelly (joel.design)
+
+This product includes software developed at joel.design.
+Licensed under the Apache License, Version 2.0.
+
+================================================================================
+Third-party attributions
+================================================================================
+
+GSAP (GreenSock Animation Platform)
+  https://gsap.com
+  Free for commercial use, including ads, as of v3.13 (April 2025).
+  Post-Webflow-acquisition license: https://gsap.com/licensing/
+
+Puppeteer
+  https://pptr.dev
+  Apache License 2.0
+
+sharp
+  https://sharp.pixelplumbing.com
+  Apache License 2.0
+
+archiver
+  https://github.com/archiverjs/node-archiver
+  MIT License
+
+terser, csso, svgo
+  MIT License
+
+@ad-preflight/cli
+  MIT License
+
+html5-validator
+  MIT License
+
+ffmpeg-static
+  https://github.com/eugeneware/ffmpeg-static
+  LGPL-2.1 (ffmpeg binary); wrapper MIT
+
+gifski
+  https://gif.ski
+  AGPL-3.0 (binary); invoked as external process, not linked.
+
+Fontsource
+  https://fontsource.org
+  Individual font families under OFL, Apache 2.0, or Ubuntu Font License.
+  See assets/fonts/NOTICE.md for per-family attributions.
+
+================================================================================
+Trademarks
+================================================================================
+
+banner-forge is not affiliated with Pencil (Brandtech Group), AdCreative.ai,
+Bannerify, Google Ads, DV360, The Trade Desk, Adform, Amazon DSP, Meta,
+LinkedIn, TikTok, Figma, or any other third party. Those marks belong to
+their respective owners. References appear under nominative fair use.

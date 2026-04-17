@@ -1,0 +1,111 @@
+/* banner-forge — GSAP template base styles. Placeholders in {{...}} are filled by scripts/build.js. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: {{width}}px;
+  height: {{height}}px;
+  overflow: hidden;
+  font-family: "{{bodyFont}}", system-ui, -apple-system, sans-serif;
+  background: {{colorBackground}};
+  color: {{colorText}};
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  cursor: pointer;
+}
+
+#banner {
+  position: relative;
+  width: {{width}}px;
+  height: {{height}}px;
+  overflow: hidden;
+  background: {{colorBackground}};
+}
+
+#hero {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: {{heroFocalX}}% {{heroFocalY}}%;
+  will-change: transform, opacity;
+}
+
+#content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: {{padding}}px;
+  gap: {{gap}}px;
+}
+
+#logo {
+  max-width: {{logoMaxWidth}}px;
+  height: auto;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+#headline {
+  margin: 0;
+  font-family: "{{headlineFont}}", system-ui, sans-serif;
+  font-weight: {{headlineWeight}};
+  font-size: {{headlineSize}}px;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: {{colorText}};
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+#subhead {
+  margin: 0;
+  font-family: "{{bodyFont}}", system-ui, sans-serif;
+  font-weight: {{bodyWeight}};
+  font-size: {{subheadSize}}px;
+  line-height: 1.2;
+  color: {{colorText}};
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+#cta {
+  display: inline-block;
+  padding: {{ctaPaddingY}}px {{ctaPaddingX}}px;
+  font-family: "{{bodyFont}}", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: {{ctaSize}}px;
+  line-height: 1;
+  border-radius: {{ctaRadius}}px;
+  background: {{colorCtaBg}};
+  color: {{colorCtaText}};
+  opacity: 0;
+  will-change: opacity, transform;
+  user-select: none;
+}
+
+#legal {
+  position: absolute;
+  bottom: 4px;
+  left: {{padding}}px;
+  right: {{padding}}px;
+  font-size: 8px;
+  line-height: 1.1;
+  color: {{colorText}};
+  opacity: 0.55;
+}
+
+/* 1px border for programmatic inventory (most DSPs require a visible boundary). */
+#banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}

@@ -1,0 +1,19 @@
+{
+  "name": "banner-forge",
+  "version": "0.1.0",
+  "description": "One Figma frame. Every banner size. Zero manual exports.",
+  "author": "Joel Kelly",
+  "homepage": "https://joel.design/banner-forge",
+  "license": "Apache-2.0",
+  "skill": "./SKILL.md",
+  "commands": "./commands",
+  "keywords": [
+    "banner-ads",
+    "html5-banners",
+    "display-ads",
+    "iab-sizes",
+    "google-ads",
+    "figma",
+    "design-automation"
+  ]
+}

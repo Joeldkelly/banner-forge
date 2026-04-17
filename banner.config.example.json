@@ -1,0 +1,85 @@
+{
+  "$schema": "./banner.schema.json",
+  "campaign": {
+    "name": "acme-spring-launch",
+    "advertiser": "Acme Co.",
+    "clickUrl": "https://acme.example.com/spring?utm_source=display&utm_campaign=spring-launch",
+    "landingPageDomain": "acme.example.com"
+  },
+  "brand": {
+    "colors": {
+      "primary": "#0A3D2E",
+      "accent": "#F5B700",
+      "background": "#FFFFFF",
+      "text": "#111111",
+      "ctaBackground": "#0A3D2E",
+      "ctaText": "#FFFFFF"
+    },
+    "fonts": {
+      "headline": {
+        "family": "Figtree",
+        "weight": 800,
+        "source": "fontsource"
+      },
+      "body": {
+        "family": "Inter",
+        "weight": 500,
+        "source": "fontsource"
+      }
+    },
+    "logo": {
+      "src": "./assets/logo.svg",
+      "alt": "Acme Co."
+    }
+  },
+  "creative": {
+    "headline": "Spring savings, sharper than ever.",
+    "subhead": "Up to 30% off the entire line.",
+    "cta": "Shop now",
+    "legal": "Offer ends 5/15. See site for details.",
+    "hero": {
+      "src": "./assets/hero.jpg",
+      "alt": "Product hero image",
+      "focalPoint": { "x": 0.5, "y": 0.4 }
+    }
+  },
+  "animation": {
+    "template": "gsap",
+    "durationSeconds": 15,
+    "loops": 3,
+    "scenes": [
+      { "id": "intro", "durationMs": 1200, "transition": "fade" },
+      { "id": "headline", "durationMs": 2000, "transition": "slide-up" },
+      { "id": "subhead", "durationMs": 1500, "transition": "fade" },
+      { "id": "cta", "durationMs": 1800, "transition": "scale-in" }
+    ]
+  },
+  "sizes": [
+    "300x250",
+    "336x280",
+    "300x600",
+    "728x90",
+    "970x90",
+    "970x250",
+    "160x600",
+    "120x600",
+    "320x50",
+    "320x100",
+    "300x50",
+    "300x1050",
+    "468x60",
+    "250x250",
+    "200x200"
+  ],
+  "networks": ["google", "dv360", "ttd", "adform"],
+  "limits": {
+    "maxZipBytes": 150000,
+    "maxAnimationSeconds": 15,
+    "maxLoops": 3
+  },
+  "ai": {
+    "disclosureRequired": true,
+    "imageModel": null,
+    "imageApiKeyEnv": null
+  }
+}

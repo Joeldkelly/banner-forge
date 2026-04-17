@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width={{width}}">
+<meta name="ad.size" content="width={{width}},height={{height}}">
+<title>{{campaignName}} {{width}}x{{height}}</title>
+
+<script type="text/javascript">
+  var clickTag = "{{clickUrl}}";
+  var clickTAG = clickTag;
+</script>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    width: {{width}}px; height: {{height}}px;
+    overflow: hidden; cursor: pointer;
+    background: {{colorBackground}};
+  }
+  #banner {
+    position: relative;
+    width: {{width}}px; height: {{height}}px;
+    overflow: hidden;
+  }
+  #banner img {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  #banner::after {
+    content: "";
+    position: absolute; inset: 0;
+    pointer-events: none;
+    border: 1px solid rgba(0,0,0,0.12);
+  }
+</style>
+</head>
+<body>
+  <div id="banner" role="img" aria-label="{{ariaLabel}}" onclick="window.open(window.clickTag,'_blank')">
+    <img src="{{staticSrc}}" alt="{{ariaLabel}}">
+  </div>
+</body>
+</html>
