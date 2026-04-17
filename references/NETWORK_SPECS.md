@@ -19,7 +19,7 @@ Rules by network. Code reads from `scripts/lib/networks.js` — keep this doc an
 - `index.html` at zip root. No subdirectories in the zip root. Supporting assets in `assets/`.
 - Single `clickTag` lowercase global.
 - Polite-load: initial load cannot exceed 150 KB. Additional assets can be loaded lazily but total ≤ 2.2 MB.
-- Google's H5 Validator is **deprecated** — don't rely on it. We use `@ad-preflight/cli`.
+- Google's H5 Validator is **deprecated** — don't rely on it. banner-forge uses its own `scripts/validate.js`.
 - No external scripts except measurement tags allowed by the advertiser's account.
 
 ### Display & Video 360

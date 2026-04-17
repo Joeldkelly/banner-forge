@@ -160,10 +160,15 @@ async function buildSize(sizeKey, config, gsapBundle) {
   }
 
   // HTML render.
-  const html = render(htmlTpl, tokens)
+  // Order matters: do the three inline-content replacements BEFORE render(), because
+  // render() strips unknown {{key}} placeholders as empty strings. The three inline
+  // blocks (CSS, GSAP, animation) are pre-prepared raw strings that must not be
+  // HTML-escaped; render() is only for user-facing tokens.
+  const htmlWithInlines = htmlTpl
     .replace("{{inlineCss}}", cssMin)
     .replace("{{inlineGsap}}", gsapBundle || "")
     .replace("{{inlineAnimation}}", animationInlined);
+  const html = render(htmlWithInlines, tokens);
 
   const htmlPath = path.join(outDir, "index.html");
   fs.writeFileSync(htmlPath, html);

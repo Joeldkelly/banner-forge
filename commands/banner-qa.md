@@ -17,13 +17,16 @@ Validate existing banner output against network rules. Does not rebuild.
 
 ## What it checks
 
-- **File size:** zip ≤ 150KB (Google/DV360 polite-load ceiling), individual assets ≤ their network's max.
-- **clickTag presence:** both `clickTag` and `clickTAG` globals declared; `clickUrl` is a valid HTTPS URL.
-- **Required files:** `index.html` at zip root, every referenced asset present, Adform `manifest.json` when targeting Adform.
-- **HTML5 validity:** runs html5-validator against `index.html`.
-- **Ad preflight:** runs `@ad-preflight/cli` for clickTag, polite-load, and external-request flags.
-- **Font references:** every font family is from Fontsource and self-hosted (no fonts.googleapis.com at runtime).
-- **Animation length:** ≤ 15s cumulative; loops ≤ 3.
+- **File size:** raw bytes against network initial/total-load ceilings; gzipped weight reported alongside.
+- **IAB LEAN budget:** ≤15 initial-load requests (Google/DV360/CM360); ≤20 (TTD/Adform/Amazon).
+- **clickTag presence:** `var clickTag` (lowercase) required; `var clickTAG` (uppercase) required for TTD/Adform. clickUrl must be valid `https://`.
+- **`<meta name="ad.size">`:** required — CM360 silently disapproves without it.
+- **Required files:** `index.html` at zip root depth 0; Adform `manifest.json` when targeting Adform.
+- **Junk files rejected:** `__MACOSX/`, `.DS_Store`, `Thumbs.db` break DV360/CM360 uploaders.
+- **Zero-byte files rejected:** inflate request count without adding value.
+- **Mixed content rejected:** `http://` references in `<script>` / `<link>` / `<img>` / `<iframe>` / `<source>`.
+- **Font refs:** every font family self-hosted; `fonts.googleapis.com` at runtime is a failure (GDPR).
+- **`repeat: -1` rejected:** infinite loops violate the ≤3-loop cap on Google/DV360/TTD.
 
 ## Output
 

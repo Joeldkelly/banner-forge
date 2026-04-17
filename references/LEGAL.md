@@ -108,7 +108,7 @@ Apache 2.0 sections 7 and 8 provide strong warranty/liability disclaimers. The R
 4. **Adobe Fonts** feels free to designers but forbids font-file embedding — never ship in a zip.
 5. **FLUX.1 dev** is non-commercial despite being the most tutorialized Flux model.
 6. **Figma MCP write-back** requires paid Figma seats — the skill degrades to read-only gracefully.
-7. **Google's H5 Validator** is deprecated — don't depend on it. Use `@ad-preflight/cli`.
+7. **Google's H5 Validator** is deprecated — don't depend on it. banner-forge's own `scripts/validate.js` covers the checks.
 8. **Meta does not accept HTML5.** Users will try and fail. The skill routes correctly via the Meta/LinkedIn/TikTok static + video path (V1).
 9. **Lottie from lottiefiles.com** is CORS-rejected by Google Ads. Inline the JSON (V1).
 10. **Cowork / Claude Desktop** cannot rely on `brew` — banner-forge bundles `ffmpeg-static`. `gifski` is optional; the pipeline continues without it.

@@ -42,8 +42,6 @@ See [NOTICE](../NOTICE) for the complete list. Summary:
 | sharp           | Apache 2.0          | No       |
 | archiver        | MIT                 | No       |
 | terser, csso, svgo | MIT              | No       |
-| @ad-preflight/cli | MIT               | No (dev only) |
-| html5-validator | MIT                 | No (dev only) |
 | ffmpeg-static   | LGPL-2.1 (binary); wrapper MIT | No; invoked as external process |
 | gifski          | AGPL-3.0 (binary)   | Invoked as external process — not linked |
 | Fontsource families | OFL / Apache / Ubuntu | **Yes** (embedded in V1 zips) |

@@ -28,12 +28,6 @@ archiver
 terser, csso, svgo
   MIT License
 
-@ad-preflight/cli
-  MIT License
-
-html5-validator
-  MIT License
-
 ffmpeg-static
   https://github.com/eugeneware/ffmpeg-static
   LGPL-2.1 (ffmpeg binary); wrapper MIT

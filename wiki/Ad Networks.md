@@ -27,7 +27,7 @@ The largest single banner-ad destination. What banner-forge ships:
 - Single `clickTag` lowercase global (we ship both for forward compatibility).
 - **Polite-load ceiling 150 KB.** Initial load must fit; additional assets load after `window.load` (V1).
 
-**Important:** Google's old H5 Validator is deprecated. Don't depend on it. banner-forge uses `@ad-preflight/cli` as the validation backbone — see [[Validate Stage]].
+**Important:** Google's old H5 Validator is deprecated. Don't depend on it. banner-forge uses its own [[Validate Stage]] checks (size, clickTag casing, `ad.size`, junk strip, gzip weight, mixed-content).
 
 ## Display & Video 360
 

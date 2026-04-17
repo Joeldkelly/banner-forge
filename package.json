@@ -40,16 +40,10 @@
     "archiver": "^7.0.1",
     "csso": "^5.0.5",
     "ffmpeg-static": "^5.2.0",
+    "gsap": "^3.13.0",
     "puppeteer": "^23.6.0",
     "sharp": "^0.33.5",
     "svgo": "^3.3.2",
     "terser": "^5.36.0"
-  },
-  "devDependencies": {
-    "@ad-preflight/cli": "^1.2.0",
-    "html5-validator": "^1.2.2"
-  },
-  "optionalDependencies": {
-    "gifski": "^1.2.0"
   }
 }
